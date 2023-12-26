@@ -47,25 +47,18 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  password      String?
   emailVerified DateTime? @map("email_verified")
   image         String?
-  userTypeId    String
-  userType      UserType  @relation(fields: [userTypeId], references: [id])
+  canPost       Boolean?  @default(false)
+  isAdmin       Boolean?  @default(false)
   accounts      Account[]
   sessions      Session[]
+  Post          Post[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   @@map("users")
-}
-
-model UserType {
-  id        String   @id @default(cuid())
-  name      String
-  userType  String
-  User      User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -77,4 +70,15 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verificationtokens")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String   @map("author_id")
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
